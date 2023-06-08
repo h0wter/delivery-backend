@@ -4,7 +4,7 @@ import { handleSchemaValidationErrors } from '../helpers/handleSchemaValidationE
 import { productSchema } from './productSchema.js';
 
 const emailRegexp = /^[\w.]+@[\w]+.[\w]+$/;
-const phoneRegexp = /^\+\d+$/;
+const phoneRegexp = /^[\d+() -]+$/;
 
 const extendedProductSchema = {
   ...productSchema.obj,
@@ -12,6 +12,9 @@ const extendedProductSchema = {
     type: Number,
     min: 1,
     required: true,
+  },
+  _id: {
+    type: String,
   },
 };
 
@@ -27,6 +30,14 @@ const orderSchema = new Schema(
       },
       required: [true, ['Please provide an email.']],
     },
+    name: {
+      type: String,
+      required: [true, 'User name required'],
+    },
+    address: {
+      type: String,
+      required: [true, 'User address required'],
+    },
     phone: {
       type: String,
       validate: {
@@ -40,10 +51,6 @@ const orderSchema = new Schema(
     shopId: {
       type: Schema.Types.ObjectId,
       ref: 'shop',
-      required: true,
-    },
-    shopName: {
-      type: String,
       required: true,
     },
     products: {
@@ -79,13 +86,16 @@ const productValidationSchema = Joi.object({
   price: Joi.number().required(),
   quantity: Joi.number().min(1).required(),
   pictureUrl: Joi.string().uri(),
+  _id: Joi.string(),
 });
 
 export const postOrderSchema = Joi.object({
   ...userDataSchema,
+  name: Joi.string().min(2).required(),
+  address: Joi.string().min(2).required(),
   shopId: Joi.string().hex().length(24).required(),
-  shopName: Joi.string().min(2).required(),
   products: Joi.array().items(productValidationSchema).required(),
+  totalPrice: Joi.number().required(),
 });
 
 export const Order = model('order', orderSchema);
