@@ -3,6 +3,7 @@ import logger from 'morgan';
 import cors from 'cors';
 import { shopsRouter } from './routes/api/shops.js';
 import { ordersRouter } from './routes/api/orders.js';
+import { historyRouter } from './routes/api/history.js';
 
 export const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.static('public'));
 
 app.use('/api/shops', shopsRouter);
 app.use('/api/orders', ordersRouter);
+app.use('/api/history', historyRouter);
 
 app.use((_, res) => {
   res.status(404).json({ message: 'Not found' });
